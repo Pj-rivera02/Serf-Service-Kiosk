@@ -2,7 +2,12 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #87CEEB, #1E90FF);
+    background-color: #1f3044;
+    background-image: url('pics/Capture.PNG');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -30,17 +35,17 @@ header {
 .logo {
     max-width: 120px;
     margin-bottom: 5px;
-    border: 3px solid rgba(255, 255, 255, 0.8);
+    border: 3px solid #646c79;
     border-radius: 50%;
-    box-shadow: 0 4px 8px rgba(30, 144, 255, 0.3);
+    box-shadow: 0 4px 8px rgba(251, 144, 57, 0.3);
     transition: all 0.3s ease;
     padding: 5px;
-    background: linear-gradient(145deg, rgba(135, 206, 235, 0.1), rgba(30, 144, 255, 0.1));
+    background-color: #f5f5f5;
 }
 
 .logo:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 12px rgba(30, 144, 255, 0.4);
+    box-shadow: 0 6px 12px rgba(251, 144, 57, 0.4);
 }
 
 h1 {
@@ -66,12 +71,12 @@ nav::-webkit-scrollbar-track {
 }
 
 nav::-webkit-scrollbar-thumb {
-    background: #1E90FF;
+    background: #fb9039;
     border-radius: 5px;
 }
 
 nav button {
-    background-color: #1E90FF;
+    background-color: #fb9039;
     color: white;
     border: none;
     padding: 8px 15px;
@@ -85,36 +90,52 @@ nav button {
 }
 
 nav button:hover {
-    background-color: #187bcd;
+    background-color: #e07d2a;
     transform: translateY(-2px);
 }
 
 nav button.active-category {
-    background-color: #0d6efd;
+    background-color: #d16e1f;
     color: white;
     transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+    box-shadow: 0 4px 8px rgba(209, 110, 31, 0.3);
 }
 
-main {
+/* Enhanced scrollable areas */
+main, #cart-items, #receipt-items {
     flex: 1;
     overflow-y: auto;
     padding-right: 5px;
     margin-bottom: 10px;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: y proximity;
 }
 
-main::-webkit-scrollbar {
-    width: 5px;
+/* Consistent scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
 }
 
-main::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
     background: #f1f1f1;
-    border-radius: 5px;
+    border-radius: 10px;
 }
 
-main::-webkit-scrollbar-thumb {
-    background: #1E90FF;
-    border-radius: 5px;
+::-webkit-scrollbar-thumb {
+    background: #fb9039;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #d16e1f;
+}
+
+/* Scroll snap points for better UX */
+.menu-item {
+    scroll-snap-align: start;
 }
 
 #menu-container {
@@ -156,7 +177,7 @@ main::-webkit-scrollbar-thumb {
     font-size: 14px;
     margin: 5px 0;
     font-weight: bold;
-    color: #0d6efd;
+    color: #fb9039;
 }
 
 #cart {
@@ -174,7 +195,7 @@ main::-webkit-scrollbar-thumb {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #1E90FF, #0d6efd);
+    background: linear-gradient(90deg, #fb9039, #d16e1f);
     border-radius: 10px 10px 0 0;
 }
 
@@ -204,7 +225,7 @@ main::-webkit-scrollbar-thumb {
 }
 
 #cart-items::-webkit-scrollbar-thumb {
-    background: #1E90FF;
+    background: #fb9039;
     border-radius: 5px;
 }
 
@@ -217,7 +238,7 @@ main::-webkit-scrollbar-thumb {
     border-radius: 8px;
     background: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    border-left: 3px solid #1E90FF;
+    border-left: 3px solid #fb9039;
     font-size: 14px;
 }
 
@@ -260,7 +281,7 @@ main::-webkit-scrollbar-thumb {
 
 .cart-item-total {
     font-weight: bold;
-    color: #0d6efd;
+    color: #fb9039;
 }
 
 .remove-btn {
@@ -281,7 +302,7 @@ p {
 .checkout-btn {
     display: block;
     width: 100%;
-    background: linear-gradient(145deg, #1E90FF, #0d6efd);
+    background: linear-gradient(145deg, #fb9039, #d16e1f);
     color: white;
     border: none;
     padding: 12px;
@@ -293,11 +314,11 @@ p {
     letter-spacing: 1px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(30, 144, 255, 0.2);
+    box-shadow: 0 4px 8px rgba(251, 144, 57, 0.2);
 }
 
 .checkout-btn:hover {
-    background: linear-gradient(145deg, #187bcd, #0b5ed7);
+    background: linear-gradient(145deg, #e07d2a, #b85e18);
     transform: translateY(-2px);
 }
 
@@ -348,7 +369,7 @@ p {
     align-items: center;
     justify-content: center;
     margin: 15px 0;
-    background: linear-gradient(to right, #ffeb3b, #ffc107);
+    background: linear-gradient(to right, #646c79, #5a616d);
     padding: 8px;
     border-radius: 25px;
 }
@@ -358,7 +379,7 @@ p {
     height: 35px;
     border-radius: 50%;
     border: none;
-    background: linear-gradient(145deg, #1E90FF, #0d6efd);
+    background: linear-gradient(145deg, #fb9039, #d16e1f);
     color: white;
     font-size: 20px;
     font-weight: bold;
@@ -370,7 +391,7 @@ p {
 }
 
 .quantity-btn:hover {
-    background: linear-gradient(145deg, #187bcd, #0b5ed7);
+    background: linear-gradient(145deg, #e07d2a, #b85e18);
     transform: scale(1.1);
 }
 
@@ -403,13 +424,13 @@ p {
 }
 
 .add-btn {
-    background: linear-gradient(145deg, #1E90FF, #0d6efd);
+    background: linear-gradient(145deg, #fb9039, #d16e1f);
     color: white;
     transition: all 0.2s ease;
 }
 
 .add-btn:hover {
-    background: linear-gradient(145deg, #187bcd, #0b5ed7);
+    background: linear-gradient(145deg, #e07d2a, #b85e18);
     transform: translateY(-2px);
 }
 
@@ -429,6 +450,11 @@ p {
     max-width: 300px;
     background-color: white;
     font-family: 'Courier New', monospace;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100%;
 }
 
 .receipt-header {
