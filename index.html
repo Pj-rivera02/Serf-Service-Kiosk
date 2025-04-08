@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tests Kiosk</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="kiosk-container">
+        <header>
+            <img src="pics/logo.jpg" alt="Test Kiosk's Logo" class="logo">
+            <h1> Self-Service Kiosk</h1>
+            
+        </header>
+
+        <nav>
+            <button data-category="meals">Inasal Meals</button>
+            <button data-category="burgers">Student Meals</button>
+            <button data-category="drinks">Drinks</button>
+            <button data-category="sides">Sides</button>
+            
+        </nav>
+
+        <main id="menu-container">
+            <!-- Menu items will be dynamically loaded here -->
+        </main>
+
+        <div id="cart">
+            <h2>Your Order</h2>
+            <ul id="cart-items"></ul>
+            <p>Total: $<span id="cart-total">0.00</span></p>
+            <button onclick="checkout()" class="checkout-btn">Checkout</button>
+        </div>
+    </div>
+
+    <div id="quantity-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="item-name-modal"></h3>
+            <div class="quantity-control">
+                <button onclick="decrementQuantity()" class="quantity-btn">-</button>
+                <input type="number" id="quantity-input" min="1" value="1" readonly>
+                <button onclick="incrementQuantity()" class="quantity-btn">+</button>
+            </div>
+            <div class="modal-buttons">
+                <button onclick="addToCart()" class="add-btn">Add to Order</button>
+                <button onclick="closeQuantityModal()" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="order-confirmation" class="modal">
+        <div class="modal-content receipt">
+            <div class="receipt-header">
+                <h2>Test Kiosk</h2>
+                <p>Thank you for your order!</p>
+                <p>Order #<span id="order-number"></span></p>
+                <p id="order-date"></p>
+            </div>
+            <div class="receipt-body">
+                <div class="receipt-items" id="receipt-items">
+                    <!-- Receipt items will be dynamically loaded here -->
+                </div>
+                <div class="receipt-divider"></div>
+                <div class="receipt-total">
+                    <p>Subtotal: $<span id="receipt-subtotal">0.00</span></p>
+                    <p>Tax (7%): $<span id="receipt-tax">0.00</span></p>
+                    <p class="receipt-total-amount">Total: $<span id="receipt-total">0.00</span></p>
+                </div>
+            </div>
+            <div class="receipt-footer">
+                <p>Thank you for dining with us!</p>
+                <button onclick="closeOrderConfirmation()" class="close-btn">Done</button>
+                <button onclick="printReceipt()" class="print-btn">Print Receipt</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
