@@ -164,11 +164,23 @@ function formatDate(date) {
     return date.toLocaleDateString('en-US', options);
 }
 
+let selectedServiceType = null;
+
+function selectServiceType(type) {
+    selectedServiceType = type;
+    document.getElementById('service-type-modal').style.display = 'none';
+    processCheckout();
+}
+
 function checkout() {
     if (cart.length === 0) {
         alert('Your cart is empty!');
         return;
     }
+    document.getElementById('service-type-modal').style.display = 'block';
+}
+
+function processCheckout() {
 
     const orderNumber = Math.floor(1000 + Math.random() * 9000);
     const currentDate = new Date();

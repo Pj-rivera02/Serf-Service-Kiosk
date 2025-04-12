@@ -58,6 +58,16 @@
         </div>
     </div>
 
+    <div id="service-type-modal" class="modal">
+        <div class="modal-content">
+            <h2>Select Service Type</h2>
+            <div class="service-options">
+                <button onclick="selectServiceType('Dine In')" class="service-btn">Dine In</button>
+                <button onclick="selectServiceType('Take Out')" class="service-btn">Take Out</button>
+            </div>
+        </div>
+    </div>
+
     <div id="order-confirmation" class="modal">
         <div class="modal-content receipt">
             <div class="receipt-header">
@@ -65,6 +75,7 @@
                 <p>Thank you for your order!</p>
                 <p>Order #<span id="order-number"></span></p>
                 <p id="order-date"></p>
+                <p>Service Type: <span id="service-type"></span></p>
             </div>
             <div class="receipt-body">
                 <div class="receipt-items" id="receipt-items">
