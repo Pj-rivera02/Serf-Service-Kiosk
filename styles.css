@@ -364,6 +364,44 @@ p {
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
+/* Service Type Modal Styling */
+.service-type-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.service-type-btn {
+    background: linear-gradient(145deg, #fb9039, #d16e1f);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.service-type-btn:hover {
+    background: linear-gradient(145deg, #e07d2a, #b85e18);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.service-type-btn:active {
+    transform: translateY(0);
+}
+
+.service-type-title {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
 .quantity-control {
     display: flex;
     align-items: center;
