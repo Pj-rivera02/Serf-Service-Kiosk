@@ -19,6 +19,7 @@
             <button data-category="burgers">Student Meals</button>
             <button data-category="drinks">Drinks</button>
             <button data-category="sides">Sides</button>
+            <button onclick="showOrderHistory()">Order History</button>
             
         </nav>
 
@@ -46,6 +47,14 @@
                 <button onclick="addToCart()" class="add-btn">Add to Order</button>
                 <button onclick="closeQuantityModal()" class="cancel-btn">Cancel</button>
             </div>
+        </div>
+    </div>
+
+    <div id="order-history" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeOrderHistory()">&times;</span>
+            <h2>Order History</h2>
+            <div id="history-items"></div>
         </div>
     </div>
 

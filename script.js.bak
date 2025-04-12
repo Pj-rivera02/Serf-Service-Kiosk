@@ -1,0 +1,532 @@
+// Menu Data (unchanged from previous script)
+const menuData = {
+    meals: [
+        { name: 'Pork Inasal', price: 8.99, image: 'pics/porkinasal.jpg' },
+        { name: 'Paa Inasal', price: 9.49, image: 'pics/paainasal.jpg' },
+        { name: 'Pecho Inasal', price: 7.99, image: 'pics/pechoinasal.jpg' }
+    ],
+    burgers: [
+        { name: 'Fish Fillet Silog', price: 5.99, image: 'pics/fishfilletsilog.png' },
+        { name: 'LongSilog', price: 6.49, image: 'pics/longsilog.png' },
+        { name: 'TapSilog', price: 6.49, image: 'pics/tapsilog.png' },
+        { name: 'CornSilog', price: 6.49, image: 'pics/cornsilog.png' },
+        { name: 'ChickSilog', price: 6.49, image: 'pics/chicksilog.webp' },
+        { name: 'Shanghai Silog', price: 2.99, image: 'pics/shanghaisilog.png' }
+    ],
+    drinks: [
+        { name: 'Coca-Cola', price: 2.29, image: 'pics/Cola.png' },
+        { name: 'Sprite', price: 2.29, image: 'pics/sprite.webp' },
+        { name: 'Fanta', price: 2.29, image: 'pics/fanta.jpg' }
+    ],
+    sides: [
+        { name: 'Chicken McNuggets', price: 4.99, image: 'pics/mcnnuggets.png' },
+        { name: 'Apple Pie', price: 2.29, image: 'pics/applepie.png' },
+        { name: 'Mozzarella Sticks', price: 3.99, image: 'pics/mozzarelasticks.webp' },
+        { name: 'Onion Rings', price: 3.99, image: 'pics/onionrings.png' },
+        { name: 'Hash Browns', price: 2.49, image: 'pics/hashbrowns.webp' },
+        { name: 'Side Salad', price: 2.99, image: 'pics/sidesalad.jpg' },
+        { name: 'Side Salad with Chicken', price: 4.99, image: 'pics/sidesaladwithchicken.jpg' },
+        { name: 'Side Salad with Bacon', price: 5.99, image: 'pics/sidesaladwbacon.jpg' },
+        { name: 'Side Salad with Chicken and Bacon', price: 6.99, image: 'pics/sidesaladwchickenwbacon.jpg' },
+        { name: 'Side Salad with Grilled Chicken', price: 5.99, image: 'pics/sidesaladwchickenwbacon.jpg' },
+    ]
+};
+
+let cart = [];
+let selectedItem = null;
+let currentCategory = 'meals';
+let selectedServiceType = 'dine-in'; // Default service type
+
+function createMenuItemElement(item) {
+    const menuItem = document.createElement('div');
+    menuItem.classList.add('menu-item', 'menu-item-enter');
+    menuItem.innerHTML = `
+        <img src="${item.image}" alt="${item.name}">
+        <h3>${item.name}</h3>
+        <p>$${item.price.toFixed(2)}</p>
+    `;
+    menuItem.onclick = () => openQuantityModal(item);
+    
+    // Remove enter class after animation
+    setTimeout(() => {
+        menuItem.classList.remove('menu-item-enter');
+    }, 300);
+    
+    return menuItem;
+}
+
+function showMenu(category) {
+    const menuContainer = document.getElementById('menu-container');
+    
+    // Remove this check to allow forcing refresh of same category
+    
+    // Add exit animation to current items
+    const currentItems = menuContainer.querySelectorAll('.menu-item');
+    currentItems.forEach(item => {
+        item.classList.add('menu-item-exit');
+    });
+
+    // Wait for exit animation to complete
+    setTimeout(() => {
+        menuContainer.innerHTML = '';
+        
+        // Create and add new menu items
+        menuData[category].forEach(item => {
+            const menuItem = createMenuItemElement(item);
+            menuContainer.appendChild(menuItem);
+        });
+        
+        // Update current category
+        currentCategory = category;
+        
+        // Highlight active category button
+        document.querySelectorAll('nav button').forEach(btn => {
+            btn.classList.remove('active-category');
+            if (btn.getAttribute('data-category') === category) {
+                btn.classList.add('active-category');
+            }
+        });
+    }, 300); // Match this with CSS transition duration
+}
+
+function openQuantityModal(item) {
+    selectedItem = item;
+    document.getElementById('item-name-modal').textContent = item.name;
+    document.getElementById('quantity-input').value = 1;
+    document.getElementById('quantity-modal').style.display = 'block';
+}
+
+function closeQuantityModal() {
+    document.getElementById('quantity-modal').style.display = 'none';
+}
+
+// New functions for quantity buttons
+function incrementQuantity() {
+    const input = document.getElementById('quantity-input');
+    input.value = parseInt(input.value) + 1;
+}
+
+function decrementQuantity() {
+    const input = document.getElementById('quantity-input');
+    if (parseInt(input.value) > 1) {
+        input.value = parseInt(input.value) - 1;
+    }
+}
+
+function addToCart() {
+    const quantity = parseInt(document.getElementById('quantity-input').value);
+    const cartItem = {
+        ...selectedItem,
+        quantity: quantity
+    };
+    cart.push(cartItem);
+    updateCart();
+    closeQuantityModal();
+}
+
+function updateCart() {
+    const cartItemsList = document.getElementById('cart-items');
+    const cartTotal = document.getElementById('cart-total');
+    
+    cartItemsList.innerHTML = '';
+    let total = 0;
+
+    cart.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span>${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}</span>
+        `;
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = 'Remove';
+        removeBtn.onclick = () => removeFromCart(index);
+        
+        li.appendChild(removeBtn);
+        cartItemsList.appendChild(li);
+        total += item.price * item.quantity;
+    });
+
+    cartTotal.textContent = total.toFixed(2);
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+
+function formatDate(date) {
+    const options = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return date.toLocaleDateString('en-US', options);
+}
+
+function confirmServiceType() {
+    selectedServiceType = document.querySelector('input[name="service-type"]:checked').value;
+    closeServiceTypeModal();
+    // Show loading indicator
+    document.getElementById('order-confirmation').style.display = 'block';
+    document.querySelector('.receipt-header h2').textContent = 'Processing your order...';
+    // Process order after a brief delay to show loading state
+    setTimeout(proceedToCheckout, 500);
+}
+
+function proceedToCheckout() {
+    try {
+        if (cart.length === 0) {
+            throw new Error('Your cart is empty!');
+        }
+
+        const orderNumber = Math.floor(1000 + Math.random() * 9000);
+        const currentDate = new Date();
+        
+        // Update receipt information with null checks
+        const orderNumberEl = document.getElementById('order-number');
+        const orderDateEl = document.getElementById('order-date');
+        const serviceTypeEl = document.getElementById('service-type');
+        
+        if (orderNumberEl) orderNumberEl.textContent = orderNumber;
+        if (orderDateEl) orderDateEl.textContent = formatDate(currentDate);
+        if (serviceTypeEl) serviceTypeEl.textContent = selectedServiceType === 'dine-in' ? 'Dine-In' : 'Take-Out';
+        
+        
+        // Declare total variable at function scope
+        let total = 0;
+        
+        // Build receipt items
+        const receiptItems = document.getElementById('receipt-items');
+        if (receiptItems) {
+            receiptItems.innerHTML = '';
+            let subtotal = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                
+                const receiptItem = document.createElement('div');
+                receiptItem.className = 'receipt-item';
+                receiptItem.innerHTML = `
+                    <div class="receipt-item-name">${item.name} x${item.quantity}</div>
+                    <div class="receipt-item-dots"></div>
+                    <div class="receipt-item-price">$${itemTotal.toFixed(2)}</div>
+                `;
+                receiptItems.appendChild(receiptItem);
+            });
+            
+            // Calculate totals
+            const tax = subtotal * 0.07;
+            total = subtotal + tax;
+            
+            const subtotalEl = document.getElementById('receipt-subtotal');
+            const taxEl = document.getElementById('receipt-tax');
+            const totalEl = document.getElementById('receipt-total');
+            
+            if (subtotalEl) subtotalEl.textContent = subtotal.toFixed(2);
+            if (taxEl) taxEl.textContent = tax.toFixed(2);
+            if (totalEl) totalEl.textContent = total.toFixed(2);
+        }
+
+        // Save order and clear cart
+        return saveOrderToDatabase(orderNumber, currentDate, total, cart)
+            .then(() => {
+                cart = [];
+                updateCart();
+                alert('Order completed successfully! Thank you for your purchase.');
+                return true;
+            })
+            .catch(error => {
+                console.error('Failed to save order:', error);
+                alert('Failed to save order. Please try again.');
+                return false;
+            });
+    } catch (error) {
+        console.error('Checkout error:', error);
+        document.getElementById('order-confirmation').style.display = 'none';
+        alert(error.message);
+        return false;
+    }
+}
+
+function closeOrderConfirmation() {
+    document.getElementById('order-confirmation').style.display = 'none';
+}
+
+function printReceipt() {
+    const receiptContent = document.querySelector('.receipt');
+    const printWindow = window.open('', '', 'width=600,height=600');
+    
+    printWindow.document.write('<html><head><title>McDonald\'s Receipt</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write(`
+        body { font-family: 'Courier New', monospace; max-width: 300px; margin: 0 auto; }
+        .receipt-header { text-align: center; border-bottom: 1px dashed #000; padding-bottom: 10px; margin-bottom: 10px; }
+        .receipt-item { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .receipt-item-dots { flex: 1; border-bottom: 1px dotted #aaa; margin: 0 5px; position: relative; top: -5px; }
+        .receipt-divider { border-top: 1px dashed #000; margin: 10px 0; }
+        .receipt-total { text-align: right; }
+        .receipt-total-amount { font-weight: bold; }
+        .receipt-footer { text-align: center; margin-top: 15px; border-top: 1px dashed #000; padding-top: 10px; }
+    `);
+    printWindow.document.write('</style></head><body>');
+    printWindow.document.write(receiptContent.innerHTML);
+    printWindow.document.write('</body></html>');
+    
+    printWindow.document.close();
+    printWindow.focus();
+    
+    // Print the document after a short delay to ensure it's fully loaded
+    setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+    }, 500);
+}
+
+// Database initialization
+let db;
+
+function initDatabase() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('kiosk_orders', 1);
+        
+        request.onerror = (event) => {
+            console.error('Database error:', event.target.error);
+            reject(event.target.error);
+        };
+        
+        request.onsuccess = (event) => {
+            db = event.target.result;
+            resolve();
+        };
+        
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            
+            // Create orders store
+            const ordersStore = db.createObjectStore('orders', {
+                keyPath: 'id',
+                autoIncrement: true
+            });
+            ordersStore.createIndex('order_number', 'order_number', { unique: true });
+            ordersStore.createIndex('order_date', 'order_date');
+            
+            // Create order items store
+            const itemsStore = db.createObjectStore('order_items', {
+                keyPath: 'id',
+                autoIncrement: true
+            });
+            itemsStore.createIndex('order_id', 'order_id');
+        };
+    });
+}
+
+// Save order to database
+function saveOrderToDatabase(orderNumber, orderDate, total, items) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['orders', 'order_items'], 'readwrite');
+        
+        transaction.onerror = (event) => {
+            reject(event.target.error);
+        };
+        
+        const ordersStore = transaction.objectStore('orders');
+        const orderRequest = ordersStore.add({
+            order_number: orderNumber,
+            order_date: orderDate.toISOString(),
+            total_amount: total
+        });
+        
+        orderRequest.onsuccess = (event) => {
+            const orderId = event.target.result;
+            const itemsStore = transaction.objectStore('order_items');
+            
+            items.forEach(item => {
+                itemsStore.add({
+                    order_id: orderId,
+                    item_name: item.name,
+                    quantity: item.quantity,
+                    price: item.price
+                });
+            });
+            
+            resolve(orderId);
+        };
+    });
+}
+
+// Get all orders from database
+function getAllOrders() {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['orders', 'order_items'], 'readonly');
+        const ordersStore = transaction.objectStore('orders');
+        const itemsStore = transaction.objectStore('order_items');
+        const orderIndex = ordersStore.index('order_date');
+        
+        const request = orderIndex.openCursor(null, 'prev');
+        const orders = [];
+        
+        request.onsuccess = (event) => {
+            const cursor = event.target.result;
+            if (cursor) {
+                const order = cursor.value;
+                const countRequest = itemsStore.index('order_id').count(IDBKeyRange.only(order.id));
+                
+                countRequest.onsuccess = (e) => {
+                    order.item_count = e.target.result;
+                    orders.push(order);
+                    cursor.continue();
+                };
+                
+                countRequest.onerror = (e) => {
+                    reject(e.target.error);
+                };
+            } else {
+                resolve(orders);
+            }
+        };
+        
+        request.onerror = (event) => {
+            reject(event.target.error);
+        };
+    });
+}
+
+// Get order details by ID
+function getOrderDetails(orderId) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['orders', 'order_items'], 'readonly');
+        const ordersStore = transaction.objectStore('orders');
+        const itemsStore = transaction.objectStore('order_items');
+        
+        const orderRequest = ordersStore.get(Number(orderId));
+        
+        orderRequest.onsuccess = (event) => {
+            const order = event.target.result;
+            if (!order) {
+                reject(new Error('Order not found'));
+                return;
+            }
+            
+            const itemsRequest = itemsStore.index('order_id').getAll(IDBKeyRange.only(Number(orderId)));
+            
+            itemsRequest.onsuccess = (e) => {
+                order.items = e.target.result;
+                resolve(order);
+            };
+            
+            itemsRequest.onerror = (e) => {
+                reject(e.target.error);
+            };
+        };
+        
+        orderRequest.onerror = (event) => {
+            reject(event.target.error);
+        };
+    });
+}
+
+// Show order history modal
+async function showOrderHistory() {
+    try {
+        const orders = await getAllOrders();
+        const historyList = document.getElementById('order-history-list');
+        historyList.innerHTML = '';
+        
+        if (orders.length === 0) {
+            historyList.innerHTML = '<p>No orders found</p>';
+        } else {
+            orders.forEach(order => {
+                const orderDate = new Date(order.order_date);
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div>
+                        <strong>Order #${order.order_number}</strong>
+                        <span>${formatDate(orderDate)}</span>
+                    </div>
+                    <div>
+                        <span>$${order.total_amount.toFixed(2)}</span>
+                        <span>${order.item_count} items</span>
+                    </div>
+                `;
+                li.onclick = () => showOrderDetails(order.id);
+                historyList.appendChild(li);
+            });
+        }
+        document.getElementById('order-history-modal').style.display = 'block';
+    } catch (error) {
+        console.error('Failed to load order history:', error);
+        alert('Failed to load order history. Please try again.');
+    }
+}
+
+// Show order details
+async function showOrderDetails(orderId) {
+    try {
+        const order = await getOrderDetails(orderId);
+        const detailsList = document.getElementById('order-details-list');
+        detailsList.innerHTML = '';
+        
+        const orderDate = new Date(order.order_date);
+        document.getElementById('order-details-number').textContent = `Order #${order.order_number}`;
+        document.getElementById('order-details-date').textContent = formatDate(orderDate);
+        document.getElementById('order-details-total').textContent = `$${order.total_amount.toFixed(2)}`;
+        
+        order.items.forEach(item => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${item.item_name} x${item.quantity}</span>
+                <span>$${(item.price * item.quantity).toFixed(2)}</span>
+            `;
+            detailsList.appendChild(li);
+        });
+        
+        document.getElementById('order-details-modal').style.display = 'block';
+    } catch (error) {
+        console.error('Failed to load order details:', error);
+        alert('Failed to load order details. Please try again.');
+    }
+}
+
+function closeOrderHistory() {
+    document.getElementById('order-history-modal').style.display = 'none';
+}
+
+function closeOrderDetails() {
+    document.getElementById('order-details-modal').style.display = 'none';
+}
+
+function closeServiceTypeModal() {
+    document.getElementById('service-type-modal').style.display = 'none';
+}
+
+function checkout() {
+    if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+    }
+    document.getElementById('service-type-modal').style.display = 'block';
+}
+
+// Initialize on DOM loaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize database
+    initDatabase().catch(error => {
+        console.error('Database initialization failed:', error);
+    });
+
+    // Set up category navigation
+    const navButtons = document.querySelectorAll('nav button');
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => showMenu(btn.dataset.category));
+    });
+
+    // Initialize with Meals menu and highlight Meals button
+    showMenu('meals');
+    document.querySelector('nav button[data-category="meals"]').classList.add('active-category');
+
+    // Set up order history button
+    document.getElementById('view-order-history').addEventListener('click', showOrderHistory);
+});

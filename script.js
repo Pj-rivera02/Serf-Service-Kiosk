@@ -173,18 +173,32 @@ function checkout() {
     const orderNumber = Math.floor(1000 + Math.random() * 9000);
     const currentDate = new Date();
     
+    // Calculate totals
+    let subtotal = 0;
+    cart.forEach(item => {
+        subtotal += item.price * item.quantity;
+    });
+    const tax = subtotal * 0.07;
+    const total = subtotal + tax;
+    
+    // Create and save order
+    const order = {
+        orderNumber: orderNumber,
+        date: currentDate,
+        items: [...cart], // Create a copy of the cart
+        total: total
+    };
+    saveOrder(order);
+    
     document.getElementById('order-number').textContent = orderNumber;
     document.getElementById('order-date').textContent = formatDate(currentDate);
     
     const receiptItems = document.getElementById('receipt-items');
     receiptItems.innerHTML = '';
     
-    let subtotal = 0;
-    
     // Add each item to the receipt
     cart.forEach(item => {
         const itemTotal = item.price * item.quantity;
-        subtotal += itemTotal;
         
         const receiptItem = document.createElement('div');
         receiptItem.className = 'receipt-item';
@@ -195,10 +209,6 @@ function checkout() {
         `;
         receiptItems.appendChild(receiptItem);
     });
-    
-    // Calculate tax and total
-    const tax = subtotal * 0.07;
-    const total = subtotal + tax;
     
     document.getElementById('receipt-subtotal').textContent = subtotal.toFixed(2);
     document.getElementById('receipt-tax').textContent = tax.toFixed(2);
@@ -245,8 +255,106 @@ function printReceipt() {
     }, 500);
 }
 
+// IndexedDB setup
+const dbName = 'OrderDB';
+const dbVersion = 1;
+let db;
+
+function initDB() {
+    const request = indexedDB.open(dbName, dbVersion);
+
+    request.onupgradeneeded = (event) => {
+        db = event.target.result;
+        const objectStore = db.createObjectStore('orders', { keyPath: 'id', autoIncrement: true });
+        objectStore.createIndex('orderNumber', 'orderNumber', { unique: true });
+        objectStore.createIndex('date', 'date', { unique: false });
+    };
+
+    request.onsuccess = (event) => {
+        db = event.target.result;
+    };
+
+    request.onerror = (event) => {
+        console.error('Database error:', event.target.error);
+    };
+}
+
+function saveOrder(order) {
+    const transaction = db.transaction(['orders'], 'readwrite');
+    const objectStore = transaction.objectStore('orders');
+    const request = objectStore.add(order);
+
+    request.onsuccess = () => {
+        console.log('Order saved to database:', order);
+    };
+
+    request.onerror = (event) => {
+        console.error('Error saving order:', event.target.error);
+    };
+}
+
+function getOrderHistory() {
+    return new Promise((resolve) => {
+        const transaction = db.transaction(['orders'], 'readonly');
+        const objectStore = transaction.objectStore('orders');
+        const request = objectStore.getAll();
+
+        request.onsuccess = () => {
+            resolve(request.result);
+        };
+
+        request.onerror = (event) => {
+            console.error('Error getting orders:', event.target.error);
+            resolve([]);
+        };
+    });
+}
+
+async function showOrderHistory() {
+    const historyItems = document.getElementById('history-items');
+    historyItems.innerHTML = ''; // Clear previous content
+    const orders = await getOrderHistory();
+    
+    if (orders.length === 0) {
+        historyItems.innerHTML = '<p class="no-orders">No past orders found</p>';
+        return;
+    }
+
+    orders.reverse().forEach(order => {
+        const orderDiv = document.createElement('div');
+        orderDiv.className = 'menu-item';
+        orderDiv.innerHTML = `
+            <h3>Order #${order.orderNumber}</h3>
+            <p>${formatDate(new Date(order.date))}</p>
+            <p>Total: $${order.total.toFixed(2)}</p>
+            <button onclick="viewOrderDetails(${order.id})" class="remove-btn">View Details</button>
+        `;
+        historyItems.appendChild(orderDiv);
+    });
+    
+    document.getElementById('order-history').style.display = 'block';
+}
+
+function closeOrderHistory() {
+    document.getElementById('order-history').style.display = 'none';
+}
+
+function viewOrderDetails(orderId) {
+    const transaction = db.transaction(['orders'], 'readonly');
+    const objectStore = transaction.objectStore('orders');
+    const request = objectStore.get(orderId);
+
+    request.onsuccess = () => {
+        const order = request.result;
+        alert(`Order #${order.orderNumber}\nDate: ${formatDate(new Date(order.date))}\nItems: ${
+            order.items.map(i => `${i.name} x${i.quantity}`).join(', ')
+        }\nTotal: $${order.total.toFixed(2)}`);
+    };
+}
+
 // Initialize on DOM loaded
 document.addEventListener('DOMContentLoaded', () => {
+    initDB();
     // Set up category navigation
     const navButtons = document.querySelectorAll('nav button');
     navButtons.forEach(btn => {
