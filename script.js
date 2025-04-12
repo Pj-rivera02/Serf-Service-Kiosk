@@ -194,16 +194,19 @@ function processCheckout() {
     const total = subtotal + tax;
     
     // Create and save order
+    const serviceType = selectedServiceType; // Get the selected service type
     const order = {
         orderNumber: orderNumber,
         date: currentDate,
         items: [...cart], // Create a copy of the cart
-        total: total
+        total: total,
+        serviceType: serviceType // Include service type in the order
     };
     saveOrder(order);
     
     document.getElementById('order-number').textContent = orderNumber;
     document.getElementById('order-date').textContent = formatDate(currentDate);
+    document.getElementById('service-type').textContent = order.serviceType;
     
     const receiptItems = document.getElementById('receipt-items');
     receiptItems.innerHTML = '';
@@ -335,9 +338,17 @@ async function showOrderHistory() {
     orders.reverse().forEach(order => {
         const orderDiv = document.createElement('div');
         orderDiv.className = 'menu-item';
+        
+        // Create list of items
+        const itemsList = order.items.map(item => 
+            `${item.name} x${item.quantity}`
+        ).join(', ');
+
         orderDiv.innerHTML = `
             <h3>Order #${order.orderNumber}</h3>
             <p>${formatDate(new Date(order.date))}</p>
+            <p>Items: ${itemsList}</p>
+            <p>Service Type: ${order.serviceType}</p>
             <p>Total: $${order.total.toFixed(2)}</p>
             <button onclick="viewOrderDetails(${order.id})" class="remove-btn">View Details</button>
         `;
