@@ -177,7 +177,12 @@ function checkout() {
         alert('Your cart is empty!');
         return;
     }
-    document.getElementById('service-type-modal').style.display = 'block';
+    // Skip showing service type modal if already selected
+    if (!selectedServiceType) {
+        document.getElementById('service-type-modal').style.display = 'block';
+    } else {
+        processCheckout();
+    }
 }
 
 function processCheckout() {
@@ -378,13 +383,33 @@ function viewOrderDetails(orderId) {
 // Initialize on DOM loaded
 document.addEventListener('DOMContentLoaded', () => {
     initDB();
+    
+    // Show service type modal first
+    document.getElementById('service-type-modal').style.display = 'block';
+    
+    // Disable other UI elements until service type is selected
+    document.querySelectorAll('nav button, #cart button').forEach(btn => {
+        btn.disabled = true;
+    });
+
     // Set up category navigation
     const navButtons = document.querySelectorAll('nav button');
     navButtons.forEach(btn => {
         btn.addEventListener('click', () => showMenu(btn.dataset.category));
     });
+});
 
+// Modified selectServiceType to enable UI after selection
+function selectServiceType(type) {
+    selectedServiceType = type;
+    document.getElementById('service-type-modal').style.display = 'none';
+    
+    // Enable UI elements after selection
+    document.querySelectorAll('nav button, #cart button').forEach(btn => {
+        btn.disabled = false;
+    });
+    
     // Initialize with Meals menu and highlight Meals button
     showMenu('meals');
     document.querySelector('nav button[data-category="meals"]').classList.add('active-category');
-});
+}
