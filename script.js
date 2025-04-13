@@ -36,6 +36,20 @@ let cart = [];
 let selectedItem = null;
 let currentCategory = 'meals';
 
+// Load cart from sessionStorage if available (clears when browser closes)
+function loadCartFromStorage() {
+    const savedCart = sessionStorage.getItem('cart');
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+        updateCart();
+    }
+}
+
+// Save cart to sessionStorage (clears when browser closes)
+function saveCartToStorage() {
+    sessionStorage.setItem('cart', JSON.stringify(cart));
+}
+
 function createMenuItemElement(item) {
     const menuItem = document.createElement('div');
     menuItem.classList.add('menu-item', 'menu-item-enter');
@@ -56,8 +70,6 @@ function createMenuItemElement(item) {
 
 function showMenu(category) {
     const menuContainer = document.getElementById('menu-container');
-    
-    // Remove this check to allow forcing refresh of same category
     
     // Add exit animation to current items
     const currentItems = menuContainer.querySelectorAll('.menu-item');
@@ -120,6 +132,7 @@ function addToCart() {
     };
     cart.push(cartItem);
     updateCart();
+    saveCartToStorage();
     closeQuantityModal();
 }
 
@@ -151,6 +164,7 @@ function updateCart() {
 function removeFromCart(index) {
     cart.splice(index, 1);
     updateCart();
+    saveCartToStorage();
 }
 
 function formatDate(date) {
@@ -169,7 +183,15 @@ let selectedServiceType = null;
 function selectServiceType(type) {
     selectedServiceType = type;
     document.getElementById('service-type-modal').style.display = 'none';
-    processCheckout();
+    
+    // Enable UI elements after selection
+    document.querySelectorAll('nav button, #cart button').forEach(btn => {
+        btn.disabled = false;
+    });
+    
+    // Initialize with Meals menu and highlight Meals button
+    showMenu('meals');
+    document.querySelector('nav button[data-category="meals"]').classList.add('active-category');
 }
 
 function checkout() {
@@ -178,15 +200,14 @@ function checkout() {
         return;
     }
     // Skip showing service type modal if already selected
-    if (!selectedServiceType) {
-        document.getElementById('service-type-modal').style.display = 'block';
-    } else {
+    if (selectedServiceType) {
         processCheckout();
+    } else {
+        document.getElementById('service-type-modal').style.display = 'block';
     }
 }
 
 function processCheckout() {
-
     const orderNumber = Math.floor(1000 + Math.random() * 9000);
     const currentDate = new Date();
     
@@ -200,6 +221,9 @@ function processCheckout() {
     
     // Create and save order
     const serviceType = selectedServiceType; // Get the selected service type
+    
+    // Clear the service type selection after saving the order
+    selectedServiceType = null;
     const order = {
         orderNumber: orderNumber,
         date: currentDate,
@@ -236,8 +260,9 @@ function processCheckout() {
     
     document.getElementById('order-confirmation').style.display = 'block';
     
-    // Reset cart after checkout
+    // Reset cart after checkout and clear session storage
     cart = [];
+    sessionStorage.removeItem('cart');
     updateCart();
 }
 
@@ -383,6 +408,7 @@ function viewOrderDetails(orderId) {
 // Initialize on DOM loaded
 document.addEventListener('DOMContentLoaded', () => {
     initDB();
+    loadCartFromStorage();
     
     // Show service type modal first
     document.getElementById('service-type-modal').style.display = 'block';
