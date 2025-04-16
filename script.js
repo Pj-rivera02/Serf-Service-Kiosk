@@ -1,40 +1,33 @@
-// Menu Data (unchanged from previous script)
-const menuData = {
+const menuData = { 
     meals: [
-        { name: 'Pork Inasal', price: 8.99, image: 'pics/porkinasal.jpg' },
-        { name: 'Paa Inasal', price: 9.49, image: 'pics/paainasal.jpg' },
-        { name: 'Pecho Inasal', price: 7.99, image: 'pics/pechoinasal.jpg' }
+        { name: 'Pork Inasal', price: 119, image: 'pics/porkinasal.jpg' },
+        { name: 'Paa Inasal', price: 119, image: 'pics/paainasal.jpg' },
+        { name: 'Pecho Inasal', price: 119, image: 'pics/pechoinasal.jpg' }
     ],
     burgers: [
-        { name: 'Fish Fillet Silog', price: 5.99, image: 'pics/fishfilletsilog.png' },
-        { name: 'LongSilog', price: 6.49, image: 'pics/longsilog.png' },
-        { name: 'TapSilog', price: 6.49, image: 'pics/tapsilog.png' },
-        { name: 'CornSilog', price: 6.49, image: 'pics/cornsilog.png' },
-        { name: 'ChickSilog', price: 6.49, image: 'pics/chicksilog.webp' },
-        { name: 'Shanghai Silog', price: 2.99, image: 'pics/shanghaisilog.png' }
+        { name: 'Fish Fillet Silog', price: 69, image: 'pics/fishfilletsilog.png' },
+        { name: 'LongSilog', price: 59, image: 'pics/longsilog.png' },
+        { name: 'TapSilog', price: 49, image: 'pics/tapsilog.png' },
+        { name: 'CornSilog', price: 49, image: 'pics/cornsilog.png' },
+        { name: 'ChickSilog', price: 59, image: 'pics/chicksilog.webp' },
+        { name: 'Shanghai Silog', price: 49, image: 'pics/shanghaisilog.png' }
     ],
     drinks: [
-        { name: 'Coca-Cola', price: 2.29, image: 'pics/Cola.png' },
-        { name: 'Sprite', price: 2.29, image: 'pics/sprite.webp' },
-        { name: 'Fanta', price: 2.29, image: 'pics/fanta.jpg' }
+        { name: 'Coca-Cola', price: 29, image: 'pics/Cola.png' },
+        { name: 'Sprite', price: 29, image: 'pics/sprite.webp' },
+        { name: 'Fanta', price: 29, image: 'pics/fanta.jpg' }
     ],
     sides: [
-        { name: 'Chicken McNuggets', price: 4.99, image: 'pics/mcnnuggets.png' },
-        { name: 'Apple Pie', price: 2.29, image: 'pics/applepie.png' },
-        { name: 'Mozzarella Sticks', price: 3.99, image: 'pics/mozzarelasticks.webp' },
-        { name: 'Onion Rings', price: 3.99, image: 'pics/onionrings.png' },
-        { name: 'Hash Browns', price: 2.49, image: 'pics/hashbrowns.webp' },
-        { name: 'Side Salad', price: 2.99, image: 'pics/sidesalad.jpg' },
-        { name: 'Side Salad with Chicken', price: 4.99, image: 'pics/sidesaladwithchicken.jpg' },
-        { name: 'Side Salad with Bacon', price: 5.99, image: 'pics/sidesaladwbacon.jpg' },
-        { name: 'Side Salad with Chicken and Bacon', price: 6.99, image: 'pics/sidesaladwchickenwbacon.jpg' },
-        { name: 'Side Salad with Grilled Chicken', price: 5.99, image: 'pics/sidesaladwchickenwbacon.jpg' },
+        { name: 'Lumpia', price: 19, image: 'pics/lumpiangshanghai.png' },
+        { name: 'Siomai', price: 19, image: 'pics/siomai.png' },
+        { name: 'Siopao', price: 29, image: 'pics/siopao.jpg' }
     ]
 };
 
 let cart = [];
 let selectedItem = null;
 let currentCategory = 'meals';
+let selectedServiceType = null;
 
 // Load cart from sessionStorage if available (clears when browser closes)
 function loadCartFromStorage() {
@@ -56,7 +49,7 @@ function createMenuItemElement(item) {
     menuItem.innerHTML = `
         <img src="${item.image}" alt="${item.name}">
         <h3>${item.name}</h3>
-        <p>$${item.price.toFixed(2)}</p>
+        <p>₱${item.price.toFixed(2)}</p>
     `;
     menuItem.onclick = () => openQuantityModal(item);
     
@@ -146,7 +139,7 @@ function updateCart() {
     cart.forEach((item, index) => {
         const li = document.createElement('li');
         li.innerHTML = `
-            <span>${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}</span>
+            <span>${item.name} x${item.quantity} - ₱${(item.price * item.quantity).toFixed(2)}</span>
         `;
         
         const removeBtn = document.createElement('button');
@@ -177,8 +170,6 @@ function formatDate(date) {
     };
     return date.toLocaleDateString('en-US', options);
 }
-
-let selectedServiceType = null;
 
 function selectServiceType(type) {
     selectedServiceType = type;
@@ -249,7 +240,7 @@ function processCheckout() {
         receiptItem.innerHTML = `
             <div class="receipt-item-name">${item.name} x${item.quantity}</div>
             <div class="receipt-item-dots"></div>
-            <div class="receipt-item-price">$${itemTotal.toFixed(2)}</div>
+            <div class="receipt-item-price">₱${itemTotal.toFixed(2)}</div>
         `;
         receiptItems.appendChild(receiptItem);
     });
@@ -379,7 +370,7 @@ async function showOrderHistory() {
             <p>${formatDate(new Date(order.date))}</p>
             <p>Items: ${itemsList}</p>
             <p>Service Type: ${order.serviceType}</p>
-            <p>Total: $${order.total.toFixed(2)}</p>
+            <p>Total: ₱${order.total.toFixed(2)}</p>
             <button onclick="viewOrderDetails(${order.id})" class="remove-btn">View Details</button>
         `;
         historyItems.appendChild(orderDiv);
@@ -401,7 +392,7 @@ function viewOrderDetails(orderId) {
         const order = request.result;
         alert(`Order #${order.orderNumber}\nDate: ${formatDate(new Date(order.date))}\nItems: ${
             order.items.map(i => `${i.name} x${i.quantity}`).join(', ')
-        }\nTotal: $${order.total.toFixed(2)}`);
+        }\nTotal: ₱${order.total.toFixed(2)}`);
     };
 }
 
