@@ -259,6 +259,13 @@ function processCheckout() {
 
 function closeOrderConfirmation() {
     document.getElementById('order-confirmation').style.display = 'none';
+    // Show service type modal again after finishing order
+    document.getElementById('service-type-modal').style.display = 'block';
+
+    // Disable other UI elements until service type is selected
+    document.querySelectorAll('nav button, #cart button').forEach(btn => {
+        btn.disabled = true;
+    });
 }
 
 function printReceipt() {
